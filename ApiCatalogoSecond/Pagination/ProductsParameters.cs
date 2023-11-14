@@ -1,26 +1,21 @@
 ﻿namespace ApiCatalogoSecond.Pagination;
 
-public record ProductsParameters
+public class ProductsParameters
 {
     const int maxPageSize = 50;
-    public int PageNumber { get; set; } = 1;
-    private int _pageSize = 10; 
-    public int PageSize 
-    { 
-        get
-            {
-                return _pageSize;
-            }
-        set
-            {
-            _pageSize = (value > maxPageSize) ? maxPageSize : value;
-            }
-    }
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
 
-    public static ValueTask<ProductsParameters?> BindAsync(HttpContext context) => 
-        ValueTask.FromResult<ProductsParameters?>(
-                new (
-                        
-                    )
-            );
+    public static ValueTask<ProductsParameters?> BindAsync(HttpContext context)
+    {
+        int.TryParse(context.Request.Query["pageNumber"], out var page);
+        int.TryParse(context.Request.Query["pageSize"], out var pageSize);
+
+        page = page == 0 ? 1 : page;
+        pageSize = pageSize > 50 ? maxPageSize : pageSize;
+
+        var result = new ProductsParameters { PageNumber = page, PageSize = pageSize };
+
+        return ValueTask.FromResult<ProductsParameters?>( result );
+    }
 }
