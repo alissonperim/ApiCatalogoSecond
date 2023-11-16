@@ -1,10 +1,12 @@
 ﻿using ApiCatalogoSecond.Data;
 using ApiCatalogoSecond.Domain.Entities;
 using ApiCatalogoSecond.DTOs;
+using ApiCatalogoSecond.Pagination;
 using ApiCatalogoSecond.Repositories;
 using ApiCatalogoSecond.Repositories.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace ApiCatalogoSecond.Endpoints;
@@ -13,12 +15,25 @@ public static class Categories
 {
     public static void CategoriesEndpoints(this WebApplication app)
     {
-        app.MapGet("/categories", async (ICategoriesRepository repository, IMapper mapper) =>
+        app.MapGet("/categories", async (HttpContext context, PaginatedParameters<Category>? parameters, ICategoriesRepository repository, IMapper mapper) =>
         {
-            var Categories = await repository.Get();
+            var Categories = await repository.GetPaginated(parameters);
+
+            var metadata = new
+            {
+                Categories.TotalPages,
+                Categories.PageSize,
+                Categories.TotalCount,
+                Categories.CurrentPage,
+                Categories.HasNext,
+                Categories.HasPrevious,
+            };
+
+            context.Response.Headers.Add("X-PAGINATION", JsonConvert.SerializeObject(metadata));
+            
             return mapper.Map<IEnumerable<CategoryDTO>>(Categories);
         }).WithTags("Categories");
-         
+
         app.MapGet("/categories/{id:Guid}", async (Guid id, ICategoriesRepository repository, IMapper mapper) =>
         {
             Category? Category = await repository.Get(id);

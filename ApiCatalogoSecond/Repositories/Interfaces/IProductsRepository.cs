@@ -6,5 +6,4 @@ namespace ApiCatalogoSecond.Repositories.Interfaces;
 
 public interface IProductsRepository : IRepository<Product>
 {
-    public IEnumerable<Product> GetPaginated(ProductsParameters? parameters);
 }

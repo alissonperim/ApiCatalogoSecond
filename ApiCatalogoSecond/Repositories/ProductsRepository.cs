@@ -9,9 +9,4 @@ namespace ApiCatalogoSecond.Repositories;
 public class ProductsRepository : Repository<Product>, IProductsRepository
 {
     public ProductsRepository(Context context) : base(context) {}
-
-    public IEnumerable<Product> GetPaginated(ProductsParameters parameters)
-    {
-        return Get().Result.OrderBy(o => o.Name).Skip((parameters.PageNumber - 1) * parameters.PageSize).ToList();
-    }
 }

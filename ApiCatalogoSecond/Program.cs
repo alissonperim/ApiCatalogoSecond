@@ -1,11 +1,6 @@
 using ApiCatalogoSecond.AppServicesExtensions;
-using ApiCatalogoSecond.DTOs.Mappings;
 using ApiCatalogoSecond.Endpoints;
 using ApiCatalogoSecond.Extensions.Exceptions;
-using ApiCatalogoSecond.Repositories;
-using ApiCatalogoSecond.Repositories.Interfaces;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 string? ConnectionString = builder.Configuration.GetConnectionString("DefaultConnectionString");
@@ -22,6 +17,9 @@ app.UseExceptionHandler(Environment)
     .UseSwaggerBuilder()
     .UseAppCors();
 app.ConfigureExceptionHandler();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 app.Endpoints();

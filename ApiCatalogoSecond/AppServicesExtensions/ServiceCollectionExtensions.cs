@@ -7,6 +7,7 @@ using AutoMapper;
 using ApiCatalogoSecond.DTOs.Mappings;
 using Microsoft.AspNetCore.Http.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
 
 namespace ApiCatalogoSecond.AppServicesExtensions
 {
@@ -29,6 +30,13 @@ namespace ApiCatalogoSecond.AppServicesExtensions
             services.AddScoped<IProductsRepository, ProductsRepository>();
             services.AddScoped<IUnityOfWork, UnityOfWork>();
             services.AddDtoMapper();
+            services.AddAuthentication();
+            services.AddAuthorization();
+
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<Context>()
+                .AddDefaultTokenProviders();
+
             services.Configure<JsonOptions>(o =>
             {
                 o.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;

@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Abstractions;
+using Microsoft.AspNetCore.Http.Headers;
+using Newtonsoft.Json;
 
 namespace ApiCatalogoSecond.Endpoints;
 
@@ -15,9 +17,21 @@ public static class Products
 {
     public static void ProductsEndpoints(this WebApplication app)
     {
-        app.MapGet("/products", (ProductsParameters? parameters, IProductsRepository repository, IMapper mapper) =>
+        app.MapGet("/products", async (PaginatedParameters<Product>? parameters, HttpContext context, IProductsRepository repository, IMapper mapper) =>
         {
-            var Products = repository.GetPaginated(parameters);
+            var Products = await repository.GetPaginated(parameters);
+
+            var metadata = new
+            {
+                Products.TotalCount,
+                Products.PageSize,
+                Products.CurrentPage,
+                Products.TotalPages,
+                Products.HasNext,
+                Products.HasPrevious
+            };
+
+            context.Response.Headers.Add("X-PAGINATION", JsonConvert.SerializeObject(metadata));
 
             return mapper.Map<IEnumerable<ProductDTO>>(Products);
         }).WithTags("Products");

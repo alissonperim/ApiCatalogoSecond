@@ -8,5 +8,6 @@ public static class EndpointsMap
     {
         app.CategoriesEndpoints();
         app.ProductsEndpoints();
+        app.AuthorizerEndpoints();
     }
 }

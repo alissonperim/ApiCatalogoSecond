@@ -1,5 +1,6 @@
 ﻿using ApiCatalogoSecond.Data;
 using ApiCatalogoSecond.Domain.Entities;
+using ApiCatalogoSecond.Pagination;
 using ApiCatalogoSecond.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,13 +47,18 @@ public class Repository<T> : IRepository<T> where T : Base
         }
     }
 
-    public async Task<IEnumerable<T>> Get()
+    public IQueryable<T> Get()
     {
-        return await _context.Set<T>().AsQueryable().ToListAsync();
+        return _context.Set<T>().AsQueryable<T>();
     }
 
     public Task<ActionResult> Update(Guid id, T entity)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<PagedList<T>> GetPaginated(PaginatedParameters<T> parameters)
+    {
+        return await PagedList<T>.ToPagedList(Get().OrderBy(o => o.CreatedAt), parameters.PageNumber, parameters.PageSize);
     }
 }
